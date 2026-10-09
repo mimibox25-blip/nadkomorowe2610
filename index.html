@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Kryteria Zaburzeń Nadkomorowych EKG</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .instruction {
+            background-color: #eef7fc;
+            border-left: 5px solid #3498db;
+            padding: 12px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+        .question-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .question-title {
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+        .option-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 10px;
+            margin: 6px 0;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .option-item:hover {
+            background-color: #f8f9fa;
+        }
+        .option-item input[type="checkbox"] {
+            margin-right: 12px;
+            margin-top: 3px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+        .option-text {
+            flex-grow: 1;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        .correct {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
+            color: #155724;
+            font-weight: bold;
+        }
+        .incorrect {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+            color: #721c24;
+        }
+        .reset-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 25px;
+            font-size: 1rem;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .reset-btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Test Wiedzy: Kryteria Zaburzeń Nadkomorowych EKG</h1>
+    
+    <div class="instruction">
+        <strong>Instrukcja:</strong> Zaznacz wszystkie prawidłowe kryteria dla danej arytmii. Liczba prawidłowych odpowiedzi podana jest w nawiasie przy nazwie. Odpowiedź sprawdzana jest natychmiast po zaznaczeniu pola!
+    </div>
+
+    <div id="quiz-container"></div>
+
+    <button class="reset-btn" onclick="location.reload()">Resetuj i pomieszaj odpowiedzi</button>
+
+    <script>
+        const quizData = [
+            {
+                title: "Aberracja przewodzenia śródkomorowego",
+                correct: [
+                    "Przedwczesny załamek P poprzedza poszerzony i zniekształcony zespół QRS.",
+                    "W odprowadzeniu VI zespół QRS najczęściej przypomina kształtem blok prawej odnogi pęczka Hisa (rsR*, rsr', rR').",
+                    "Krótki cykl (krótki odstęp RR) zakończony szerokim zespołem QRS często jest poprzedzony przez długi cykl zjawisko Ashmana.",
+                    "Przerwa poekstrasystoliczna najczęściej krótsza niż pełna przerwa wyrównawcza."
+                ],
+                incorrect: [
+                    "Przedwczesny załamek P poprzedza wąski, prawidłowy zespół QRS bez zniekształceń.",
+                    "W odprowadzeniu VI zespół QRS najczęściej przypomina kształtem blok lewej odnogi pęczka Hisa (QS, rS).",
+                    "Przerwa poekstrasystoliczna jest zawsze pełną przerwą wyrównawczą."
+                ]
+            },
+            {
+                title: "Częstoskurcz przedsionkowy z blokiem",
+                correct: [
+                    "Załamki P o zmienionym kształcie w porównaniu z rytmem zatokowym, rozdzielone linią izoelektryczną.",
+                    "Częstość rytmu przedsionków 110-280/min.",
+                    "Blok a-v II lub III stopnia."
+                ],
+                incorrect: [
+                    "Załamki P nie są rozdzielone linią izoelektryczną i mają kształt zębów piły.",
+                    "Częstość rytmu przedsionków mieści się w przedziale 350-600/min.",
+                    "Zawsze zachowane jest przewodzenie przedsionkowo-komorowe 1:1 bez bloku."
+                ]
+            },
+            {
+                title: "Ekstrasystolia przedsionkowa",
+                correct: [
+                    "Przedwczesny (w stosunku do rytmu zatokowego) załamek P o zmienionym kształcie.",
+                    "Odstęp PQ dłuższy od 0,1 s.",
+                    "Kształt zespołu QRS przeważnie prawidłowy."
+                ],
+                incorrect: [
+                    "Załamek P po zespole QRS z czasem PQ krótszym od 0,1 s lub wewnątrz QRS.",
+                    "Odstęp PQ zawsze krótszy od 0,08 s.",
+                    "Zespół QRS obowiązkowo poszerzony powyżej 0,14 s z falami delta."
+                ]
+            },
+            {
+                title: "Ekstrasystolia węzłowa",
+                correct: [
+                    "Przedwczesny (w stosunku do rytmu zatokowego) zespół QRS najczęściej o prawidłowym kształcie.",
+                    "Załamek P pobudzenia przedwczesnego zlokalizowany jest tuż przed zespołem QRS (odstęp PQ<0,1 s), w zespole QRS lub bezpośrednio po nim.",
+                    "Załamek P pobudzenia przedwczesnego ujemny w odprowadzeniach II, III i aVF (jeżeli jest widoczny)."
+                ],
+                incorrect: [
+                    "Załamek P pobudzenia przedwczesnego jest zawsze dodatni w odprowadzeniach II, III i aVF.",
+                    "Odstęp PQ przed zespołem QRS zawsze dłuższy niż 0,12 s.",
+                    "Zespół QRS musi być zawsze poszerzony i mieć kształt bloku odnogi pęczka Hisa."
+                ]
+            },
+            {
+                title: "Migotanie przedsionków",
+                correct: [
+                    "Rytm komór zupełnie niemiarowy.",
+                    "Fala f nieregularna, o zmiennej amplitudzie i kształcie.",
+                    "Częstość wychyleń fali f 350-600/min. -700/-",
+                    "Brak załamków P.",
+                    "Kształt zespołów QRS przeważnie prawidłowy (czasem o różnym woltażu)."
+                ],
+                incorrect: [
+                    "Rytm komór ściśle miarowy z jednakowymi odstępami RR.",
+                    "Obecność regularnych załamków P rozdzielonych linią izoelektryczną.",
+                    "Częstość wychyleń fali f wynosi 100-250/min."
+                ]
+            },
+            {
+                title: "Wielokształtny częstoskurcz przedsionkowy",
+                correct: [
+                    "Częstość rytmu 100-250/min",
+                    "Załamki P różnokształtne w tym samym odprowadzeniu.",
+                    "Zmienny odstęp PQ.",
+                    "Kształt zespołów QRS przeważnie prawidłowy.",
+                    "Niemiarowy rytm komór."
+                ],
+                incorrect: [
+                    "Rytm komór całkowicie miarowy.",
+                    "Załamki P mają identyczny, jednolity kształt we wszystkich ewolucjach.",
+                    "Odstęp PQ jest ściśle stały w każdym pobudzeniu."
+                ]
+            },
+            {
+                title: "Nienapadowy częstoskurcz węzłowy",
+                correct: [
+                    "Miarowy rytm o częstości 60-130/min.",
+                    "Kształt zespołów QRS przeważnie prawidłowy.",
+                    "Załamek P zlokalizowany tuż przed zespołem QRS (odstęp PQ<0,1 s), w zespole QRS lub bezpośrednio po nim."
+                ],
+                incorrect: [
+                    "Niemiarowy rytm komór o częstości powyżej 200/min.",
+                    "Załamek P zlokalizowany zawsze przed zespołem QRS z odstępem PQ > 0,15 s.",
+                    "Załamek P jest zawsze dodatni w odprowadzeniach II, III i aVF."
+                ]
+            },
+            {
+                title: "Przyspieszony rytm zatokowy",
+                correct: [
+                    "Miarowy rytm zatokowy o częstości powyżej 100/min.",
+                    "Załamki P dodatnie w odprowadzeniach I i II, ujemne w aVR.",
+                    "Każdy zespół QRS poprzedzony załamkiem P."
+                ],
+                incorrect: [
+                    "Miarowy rytm zatokowy o częstości poniżej 60/min.",
+                    "Załamki P ujemne w odprowadzeniach I i II, dodatnie w aVR.",
+                    "Zespoły QRS występują niezależnie od załamków P (rozkojarzenie)."
+                ]
+            },
+            {
+                title: "Rozkojarzenie przedsionkowo-komorowe",
+                correct: [
+                    "Niezależna czynność przedsionków i komór.",
+                    "Częstość załamków P mniejsza lub podobna do częstości zespołów QRS.",
+                    "Kształt zespołów QRS zależy od położenia rozrusznika."
+                ],
+                incorrect: [
+                    "Częstość załamków P jest zawsze znacznie większa od częstości zespołów QRS (np. 300/min vs 40/min).",
+                    "Każdy zespół QRS jest sztywno powiązany ze stałym czasem PQ z poprzedzającym załamkiem P.",
+                    "Obecność nieregularnej fali f o częstości 500/min bez załamków P."
+                ]
+            },
+            {
+                title: "Rytm przedsionkowy",
+                correct: [
+                    "Miarowy rytm o częstości 40-100/min.",
+                    "Ujemne załamki P w odprowadzeniach II, III, aVF.",
+                    "Odstęp PQ dłuższy od 0,1 s.",
+                    "Kształt zespołów QRS przeważnie prawidłowy."
+                ],
+                incorrect: [
+                    "Dodatnie załamki P w odprowadzeniach II, III, aVF i ujemne w aVR.",
+                    "Odstęp PQ zawsze krótszy od 0,08 s.",
+                    "Częstość rytmu przedsionków wynosi 250-350/min."
+                ]
+            },
+            {
+                title: "Napadowy częstoskurcz nadkomorowy",
+                correct: [
+                    "Częstość rytmu 150-250/min.",
+                    "Załamek P o zmienionym kształcie w porównaniu z rytmem zatokowym lub niewidoczny.",
+                    "Kształt zespołów QRS przeważnie prawidłowy.",
+                    "Nagły początek i nagły koniec częstoskurczu."
+                ],
+                incorrect: [
+                    "Częstość rytmu wynosi powoli narastając od 40 do 60/min.",
+                    "Rytm narasta i wygasa bardzo łagodnie i stopniowo.",
+                    "Załamek P jest zawsze dodatni i wyraźny z czasem PQ dłuższym niż 0,22 s."
+                ]
+            },
+            {
+                title: "Trzepotanie przedsionków",
+                correct: [
+                    "Fala F pobudzeń przedsionkowych nie porozdzielana odcinkami izoelektrycznymi, w niektórych odprowadzeniach w kształcie zębów piły.",
+                    "Częstość wychyleń fali F 250-350/min.",
+                    "Rytm komór miarowy, wolniejszy od rytmu przedsionków z powodu bloku a-v.",
+                    "Kształt zespołów QRS przeważnie prawidłowy."
+                ],
+                incorrect: [
+                    "Fala F porozdzielana wyraźnymi odcinkami izoelektrycznymi.",
+                    "Częstość wychyleń fali F wynosi 60-100/min.",
+                    "Rytm komór jest zawsze szybszy od rytmu przedsionków."
+                ]
+            },
+            {
+                title: "Zastępczy rytm węzłowy",
+                correct: [
+                    "Miarowy rytm o częstości 40-60/min",
+                    "Kształt zespołów QRS przeważnie prawidłowy.",
+                    "Załamki P zlokalizowane tuż przed zespołem QRS (odstęp PQ<0,1 s), w zespole QRS lub bezpośrednio po nim.",
+                    "Załamek P pobudzenia przedwczesnego ujemny w odprowadzeniach II, III i aVF (jeżeli jest widoczny)."
+                ],
+                incorrect: [
+                    "Szybki miarowy rytm o częstości 150-250/min.",
+                    "Załamek P jest zawsze dodatni w II, III, aVF i występuje z PQ > 0,18 s.",
+                    "Pierwsze pobudzenie występuje przedwcześnie z bardzo krótkim czasem sprzężenia."
+                ]
+            }
+        ];
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            // Pytania idą W STAŁEJ KOLEJNOŚCI (bez shufflingu pytań)
+            quizData.forEach((q, qIndex) => {
+                const correctCount = q.correct.length;
+                
+                let options = [];
+                q.correct.forEach(text => options.push({ text: text, isCorrect: true }));
+                
+                // Mieszanie wyłącznie odpowiedzi błędnych i wybór dokładnie 3
+                const shuffledIncorrect = shuffle([...q.incorrect]).slice(0, 3);
+                shuffledIncorrect.forEach(text => options.push({ text: text, isCorrect: false }));
+                
+                // Mieszanie odpowiedzi pod danym pytaniem
+                options = shuffle(options);
+
+                const card = document.createElement('div');
+                card.className = 'question-card';
+
+                const title = document.createElement('div');
+                title.className = 'question-title';
+                title.innerText = `${qIndex + 1}. ${q.title} (${correctCount} prawidłowe ${correctCount === 1 ? 'odpowiedź' : (correctCount < 5 ? 'odpowiedzi' : 'odpowiedzi')})`;
+                card.appendChild(title);
+
+                options.forEach((opt, oIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option-item';
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = `q_${qIndex}_o_${oIndex}`;
+                    
+                    checkbox.onchange = function() {
+                        if (this.checked) {
+                            if (opt.isCorrect) {
+                                optionDiv.className = 'option-item correct';
+                            } else {
+                                optionDiv.className = 'option-item incorrect';
+                            }
+                        } else {
+                            optionDiv.className = 'option-item';
+                        }
+                    };
+
+                    const label = document.createElement('label');
+                    label.htmlFor = `q_${qIndex}_o_${oIndex}`;
+                    label.className = 'option-text';
+                    label.innerText = opt.text;
+
+                    optionDiv.appendChild(checkbox);
+                    optionDiv.appendChild(label);
+                    card.appendChild(optionDiv);
+                });
+
+                container.appendChild(card);
+            });
+        }
+
+        window.onload = renderQuiz;
+    </script>
+</body>
+</html>
